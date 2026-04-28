@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import { pool } from "./db"; // Importa a conexão com o banco
+import { pool } from "./db"; 
 
 const app = express();
 const port = 3000;
@@ -14,7 +14,7 @@ app.get("/todos", async (req: Request, res: Response) => {
     const result = await pool.query("SELECT * FROM todos ORDER BY id ASC");
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error("Erro ao buscar tarefas:", err);
     res.status(500).json({ message: "Erro ao buscar tarefas no banco." });
   }
 });
@@ -22,6 +22,7 @@ app.get("/todos", async (req: Request, res: Response) => {
 // 2. CRIAR UMA NOVA TAREFA
 app.post("/todos", async (req: Request, res: Response) => {
   const { text } = req.body;
+
   if (!text) {
     return res.status(400).json({ message: "O texto é obrigatório." });
   }
@@ -31,19 +32,19 @@ app.post("/todos", async (req: Request, res: Response) => {
     const result = await pool.query(query, [text, false]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("Erro ao salvar tarefa:", err);
     res.status(500).json({ message: "Erro ao salvar tarefa." });
   }
 });
 
-// 3. APAGAR TODAS AS CONCLUÍDAS (Rota fixa vem ANTES da rota com :id)
+// 3. APAGAR TODAS AS CONCLUÍDAS
 app.delete("/todos/completed", async (req: Request, res: Response) => {
   try {
     await pool.query("DELETE FROM todos WHERE completed = true");
     res.status(204).send();
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Erro ao limpar concluídas." });
+    console.error("Erro ao limpar concluídas:", err);
+    res.status(500).json({ message: "Erro ao limpar tarefas concluídas." });
   }
 });
 
@@ -61,7 +62,7 @@ app.patch("/todos/:id", async (req: Request, res: Response) => {
     }
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("Erro ao atualizar tarefa:", err);
     res.status(500).json({ message: "Erro ao atualizar tarefa." });
   }
 });
@@ -77,7 +78,7 @@ app.delete("/todos/:id", async (req: Request, res: Response) => {
     }
     res.status(204).send();
   } catch (err) {
-    console.error(err);
+    console.error("Erro ao deletar tarefa:", err);
     res.status(500).json({ message: "Erro ao deletar tarefa." });
   }
 });
