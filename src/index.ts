@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import { pool } from "./db"; // Importamos a conexão com o banco
+import { pool } from "./db"; // Importa a conexão com o banco
 
 const app = express();
 const port = 3000;
